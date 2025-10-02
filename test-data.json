@@ -1,0 +1,14 @@
+{
+  "tables": [
+    {"name":"VIP Table","gameType":"CASH","smallBlind":50,"bigBlind":100,"maxPlayers":6},
+    {"name":"Tournament Final","gameType":"TOURNAMENT","smallBlind":100,"bigBlind":200,"maxPlayers":9},
+    {"name":"Sit n Go Turbo","gameType":"SIT_AND_GO","smallBlind":25,"bigBlind":50,"maxPlayers":6}
+  ],
+  "players": [
+    {"name":"Alice","email":"alice@poker.com"},
+    {"name":"Bob","email":"bob@poker.com"},
+    {"name":"Charlie","email":"charlie@poker.com"},
+    {"name":"Diana","email":"diana@poker.com"},
+    {"name":"Eve","email":"eve@poker.com"}
+  ]
+}

@@ -1,12 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Prisma Schema - SQLite Version for Quick Testing
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -17,9 +16,9 @@ datasource db {
 model Table {
   id         String   @id @default(cuid())
   name       String   @unique
-  gameType   GameType @default(CASH)
-  smallBlind Decimal  @db.Decimal(10, 2)
-  bigBlind   Decimal  @db.Decimal(10, 2)
+  gameType   String   @default("CASH") // CASH, TOURNAMENT, SIT_AND_GO
+  smallBlind Float
+  bigBlind   Float
   maxPlayers Int      @default(10)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -35,7 +34,7 @@ model Player {
   name          String   @unique
   email         String?  @unique
   totalHands    Int      @default(0)
-  totalWinnings Decimal  @default(0) @db.Decimal(12, 2)
+  totalWinnings Float    @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -50,9 +49,9 @@ model Hand {
   id         String   @id @default(cuid())
   tableId    String
   handNumber Int
-  street     Street   @default(PREFLOP)
-  pot        Decimal  @default(0) @db.Decimal(12, 2)
-  rake       Decimal  @default(0) @db.Decimal(10, 2)
+  street     String   @default("PREFLOP") // PREFLOP, FLOP, TURN, RIVER, SHOWDOWN
+  pot        Float    @default(0)
+  rake       Float    @default(0)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -66,15 +65,15 @@ model Hand {
 }
 
 model PlayerInHand {
-  id            String   @id @default(cuid())
+  id            String  @id @default(cuid())
   handId        String
   playerId      String
-  position      Position
-  startingChips Decimal  @db.Decimal(12, 2)
-  endingChips   Decimal  @db.Decimal(12, 2)
-  cards         String?  // JSON: ["As", "Kh"]
-  won           Decimal  @default(0) @db.Decimal(12, 2)
-  showedDown    Boolean  @default(false)
+  position      String  // SB, BB, UTG, etc.
+  startingChips Float
+  endingChips   Float
+  cards         String? // JSON: ["As", "Kh"]
+  won           Float   @default(0)
+  showedDown    Boolean @default(false)
 
   hand   Hand   @relation(fields: [handId], references: [id], onDelete: Cascade)
   player Player @relation(fields: [playerId], references: [id])
@@ -86,14 +85,14 @@ model PlayerInHand {
 }
 
 model Action {
-  id         String     @id @default(cuid())
+  id         String   @id @default(cuid())
   handId     String
   playerId   String
-  street     Street
-  actionType ActionType
-  amount     Decimal    @default(0) @db.Decimal(12, 2)
+  street     String   // PREFLOP, FLOP, TURN, RIVER, SHOWDOWN
+  actionType String   // FOLD, CHECK, CALL, BET, RAISE, ALL_IN
+  amount     Float    @default(0)
   sequence   Int
-  timestamp  DateTime   @default(now())
+  timestamp  DateTime @default(now())
 
   hand   Hand   @relation(fields: [handId], references: [id], onDelete: Cascade)
   player Player @relation(fields: [playerId], references: [id])
@@ -103,44 +102,4 @@ model Action {
   @@index([playerId])
   @@index([street])
   @@index([timestamp])
-}
-
-// ========================================
-// Enums
-// ========================================
-
-enum GameType {
-  CASH
-  TOURNAMENT
-  SIT_AND_GO
-}
-
-enum Street {
-  PREFLOP
-  FLOP
-  TURN
-  RIVER
-  SHOWDOWN
-}
-
-enum Position {
-  SB
-  BB
-  UTG
-  UTG_PLUS_1 @map("UTG+1")
-  UTG_PLUS_2 @map("UTG+2")
-  MP
-  MP_PLUS_1  @map("MP+1")
-  HJ
-  CO
-  BTN
-}
-
-enum ActionType {
-  FOLD
-  CHECK
-  CALL
-  BET
-  RAISE
-  ALL_IN
 }
