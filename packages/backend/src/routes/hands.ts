@@ -13,6 +13,7 @@ import type {
   GetHandDetailsResponse
 } from '@poker-logger/shared';
 import { Street, ActionType, Position } from '@poker-logger/shared';
+import { getSocketService } from '../services/socket';
 
 const handRoutes: FastifyPluginAsync = async (fastify) => {
   // Create hand schema
@@ -163,6 +164,14 @@ const handRoutes: FastifyPluginAsync = async (fastify) => {
           }
         }
       });
+
+      // Broadcast WebSocket event
+      try {
+        const socketService = getSocketService();
+        socketService.broadcastHandCreated(validatedData.tableId, hand);
+      } catch (err) {
+        fastify.log.warn('WebSocket broadcast failed:', err);
+      }
 
       return reply.status(201).send({
         success: true,

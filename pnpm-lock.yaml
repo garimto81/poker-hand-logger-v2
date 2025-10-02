@@ -60,7 +60,7 @@ importers:
         specifier: ^10.3.1
         version: 10.3.1
       socket.io:
-        specifier: ^4.6.1
+        specifier: ^4.8.1
         version: 4.8.1
       zod:
         specifier: ^3.22.4
@@ -100,7 +100,7 @@ importers:
         specifier: ^6.21.1
         version: 6.30.1(react-dom@18.3.1)(react@18.3.1)
       socket.io-client:
-        specifier: ^4.6.1
+        specifier: ^4.8.1
         version: 4.8.1
       zustand:
         specifier: ^4.4.7
@@ -152,10 +152,10 @@ importers:
   packages/shared:
     devDependencies:
       '@types/node':
-        specifier: ^20.10.7
+        specifier: ^20.19.19
         version: 20.19.19
       typescript:
-        specifier: ^5.3.3
+        specifier: ^5.9.3
         version: 5.9.3
 
 packages:

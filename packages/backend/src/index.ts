@@ -1,5 +1,5 @@
 /**
- * 포커 핸드 로거 v2.0 - Backend Server
+ * 포커 핸드 로거 v2.0 - Backend Server with WebSocket
  */
 
 import Fastify from 'fastify';
@@ -11,6 +11,7 @@ import config from './config';
 import tableRoutes from './routes/tables';
 import playerRoutes from './routes/players';
 import handRoutes from './routes/hands';
+import { initializeSocketService } from './services/socket';
 
 // Initialize Prisma
 export const prisma = new PrismaClient({
@@ -77,6 +78,11 @@ async function start() {
 
     // Start listening
     await fastify.listen({ port: config.port, host: '0.0.0.0' });
+
+    // Initialize WebSocket after HTTP server is ready
+    const socketService = initializeSocketService(fastify.server);
+    fastify.log.info('🔌 WebSocket server initialized');
+    fastify.log.info(`   Socket.io path: /socket.io`);
 
     fastify.log.info(`🚀 Server running on http://localhost:${config.port}`);
     fastify.log.info(`📊 Environment: ${config.nodeEnv}`);

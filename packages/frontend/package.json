@@ -13,12 +13,12 @@
   },
   "dependencies": {
     "@poker-logger/shared": "workspace:*",
+    "axios": "^1.6.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.1",
-    "zustand": "^4.4.7",
-    "socket.io-client": "^4.6.1",
-    "axios": "^1.6.5"
+    "socket.io-client": "^4.8.1",
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@types/react": "^18.2.47",
