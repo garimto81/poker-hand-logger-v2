@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: poker-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: poker_hand_logger
+      POSTGRES_USER: poker
+      POSTGRES_PASSWORD: poker123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U poker"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - poker-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: poker-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - poker-network
+
+  # Backend API (프로덕션 빌드 후 사용)
+  backend:
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+    container_name: poker-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://poker:poker123@postgres:5432/poker_hand_logger
+      REDIS_URL: redis://redis:6379
+      PORT: 3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - poker-network
+    # 프로덕션 배포 시 주석 해제
+    # profiles: ["production"]
+
+  # Frontend (프로덕션 빌드 후 사용)
+  frontend:
+    build:
+      context: .
+      dockerfile: packages/frontend/Dockerfile
+    container_name: poker-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - poker-network
+    # 프로덕션 배포 시 주석 해제
+    # profiles: ["production"]
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  poker-network:
+    driver: bridge
